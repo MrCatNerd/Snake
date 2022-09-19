@@ -1,5 +1,5 @@
 # Snake
-A copy of Snake made with python and pygame
+A 10 fps copy of Snake made with python and pygame
 
 
 if you want to get into debug mode:

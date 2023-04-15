@@ -3,15 +3,7 @@ __author__ = "Alon B.R."
 import pygame
 import random
 
-from settings import (
-    SNAKE_HEAD_COLOR,
-    WIDTH,
-    HEIGHT,
-    SCALE,
-    SNAKE_COLOR,
-    SNAKE_SPEED,
-    SFX,
-)
+from settings import *
 
 pygame.init()
 
@@ -33,6 +25,9 @@ class Snake:
 
         self.key_pressed: dict = {"w": False, "a": False, "s": False, "d": False}
 
+        self.move_clock: float = 0.0
+        self.time_to_move: float = 1
+
     def update(
         self,
         keys: pygame.key.get_pressed,
@@ -40,74 +35,87 @@ class Snake:
         window: pygame.Surface,
         move_sfx: pygame.mixer.Sound,
         channel: pygame.mixer.Channel,
+        deltaTime: float,
     ):
 
-        # <SPAGHETTI CODE>
+        if self.move_clock > self.time_to_move:
 
-        if (
-            (keys[pygame.K_w] or keys[pygame.K_UP])
-            and not self.key_pressed["w"]
-            and self.direction.y != 1
-        ):  #     -up
-            self.direction.xy = 0, -1
-            self.key_pressed["w"] = True
+            # <SPAGHETTI CODE>
 
-            channel.play(move_sfx)
-        elif self.key_pressed["w"] and not (keys[pygame.K_w] or keys[pygame.K_UP]):
-            self.key_pressed["w"] = False
+            if (
+                (keys[pygame.K_w] or keys[pygame.K_UP])
+                and not self.key_pressed["w"]
+                and self.direction.y != 1
+            ):  #     -up
+                self.direction.xy = 0, -1
+                self.key_pressed["w"] = True
 
-        if (
-            (keys[pygame.K_a] or keys[pygame.K_LEFT])
-            and not self.key_pressed["a"]
-            and self.direction.x != 1
-        ):  #  -left
-            self.direction.xy = -1, 0
-            self.key_pressed["a"] = True
+                channel.play(move_sfx)
+            elif self.key_pressed["w"] and not (keys[pygame.K_w] or keys[pygame.K_UP]):
+                self.key_pressed["w"] = False
 
-            channel.play(move_sfx)
-        elif self.key_pressed["a"] and not (keys[pygame.K_a] or keys[pygame.K_LEFT]):
-            self.key_pressed["a"] = False
+            if (
+                (keys[pygame.K_a] or keys[pygame.K_LEFT])
+                and not self.key_pressed["a"]
+                and self.direction.x != 1
+            ):  #  -left
+                self.direction.xy = -1, 0
+                self.key_pressed["a"] = True
 
-        if (
-            (keys[pygame.K_s] or keys[pygame.K_DOWN])
-            and not self.key_pressed["s"]
-            and self.direction.y != -1
-        ):  #  -down
-            self.direction.xy = 0, 1
-            self.key_pressed["s"] = True
+                channel.play(move_sfx)
+            elif self.key_pressed["a"] and not (
+                keys[pygame.K_a] or keys[pygame.K_LEFT]
+            ):
+                self.key_pressed["a"] = False
 
-            channel.play(move_sfx)
-        elif self.key_pressed["s"] and not (keys[pygame.K_s] or keys[pygame.K_DOWN]):
-            self.key_pressed["s"] = False
+            if (
+                (keys[pygame.K_s] or keys[pygame.K_DOWN])
+                and not self.key_pressed["s"]
+                and self.direction.y != -1
+            ):  #  -down
+                self.direction.xy = 0, 1
+                self.key_pressed["s"] = True
 
-        if (
-            (keys[pygame.K_d] or keys[pygame.K_RIGHT])
-            and not self.key_pressed["d"]
-            and self.direction.x != -1
-        ):  # -right
-            self.direction.xy = 1, 0
-            self.key_pressed["d"] = True
+                channel.play(move_sfx)
+            elif self.key_pressed["s"] and not (
+                keys[pygame.K_s] or keys[pygame.K_DOWN]
+            ):
+                self.key_pressed["s"] = False
 
-            channel.play(move_sfx)
+            if (
+                (keys[pygame.K_d] or keys[pygame.K_RIGHT])
+                and not self.key_pressed["d"]
+                and self.direction.x != -1
+            ):  # -right
+                self.direction.xy = 1, 0
+                self.key_pressed["d"] = True
 
-        elif self.key_pressed["d"] and not (keys[pygame.K_d] or keys[pygame.K_RIGHT]):
-            self.key_pressed["d"] = False
+                channel.play(move_sfx)
 
-        # </SPAGHETTI CODE>
+            elif self.key_pressed["d"] and not (
+                keys[pygame.K_d] or keys[pygame.K_RIGHT]
+            ):
+                self.key_pressed["d"] = False
 
-        self.update_trail()
+            # </SPAGHETTI CODE>
 
-        self.pos.x += self.direction.x * SNAKE_SPEED * SCALE
-        self.pos.y += self.direction.y * SNAKE_SPEED * SCALE
+            self.update_trail()
 
-        self.stick_to_boarder()
+            self.pos.x += self.direction.x * SNAKE_SPEED * SCALE
+            self.pos.y += self.direction.y * SNAKE_SPEED * SCALE
 
-        if self.pos.xy == apple.pos.xy:
-            apple.reposition()
-            self.score += 1
+            self.stick_to_boarder()
 
-        if self.direction.x != 0 or self.direction.y != 0:
-            self.check_dead(apple)
+            if self.pos.xy == apple.pos.xy:
+                apple.reposition()
+                self.score += 1
+
+            if self.direction.x != 0 or self.direction.y != 0:
+                self.check_dead(apple)
+
+            self.move_clock = 0.0
+
+        self.move_clock += deltaTime
 
         for peace in self.trail:
             draw(peace, SNAKE_COLOR, window)

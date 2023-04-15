@@ -1,0 +1,19 @@
+{
+    "data path": "data",
+    "title":"Snake by Alon B.R.",
+    "width":1000,
+    "height":1000,
+    "font name":"FiraSans-Bold.ttf",
+    "font size": 50,
+    "font path": "fonts",
+    "font antialiasing": true,
+    "scale": 20,
+    "fps": 0,
+    "sfx path":"sound",
+    "sfx volume": 20.0,
+    "snake speed": 1,
+    "snake color": [25, 255, 5],
+    "snake head color": [25, 200, 30],
+    "apple color": [255,12,10],
+    "game speed": 20
+}
